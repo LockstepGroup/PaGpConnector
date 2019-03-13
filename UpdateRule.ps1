@@ -75,7 +75,12 @@ $Endpoint = New-UDEndpoint -Url "/$ApiName" -Method "POST" -ArgumentList $RootDi
             # Get devices from api
             $Rest = @{}
             $Rest.Uri = "http://localhost:10005/api/getdevice/$UserTag"
-            $Response = Invoke-RestMethod @Rest
+            try {
+                $Response = Invoke-RestMethod @Rest
+            } catch {
+                log 1 "could not connect to /getdevice api" -IsError
+                break
+            }
             $DeviceList = $Response
 
             # Get Address list from PA, may need to narrow this down later, but I didn't want to do multiple API calls.
