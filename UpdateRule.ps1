@@ -48,6 +48,7 @@ $Endpoint = New-UDEndpoint -Url "/$ApiName" -Method "POST" -ArgumentList $RootDi
     try {
         log 5 "attempting to connect to palo alto firewall"
         $Connect = Get-PaDevice -DeviceAddress $Config.PaDevice -ApiKey $ApiKey
+        log 5 "connection successful"
     } catch {
         log 1 "could not connect to pa, check ts.xml for details" -IsError
         $TroubleshootingData.Error += $_
@@ -62,6 +63,7 @@ $Endpoint = New-UDEndpoint -Url "/$ApiName" -Method "POST" -ArgumentList $RootDi
         $GpEventRx = [regex] "GlobalProtect\ gateway\ client\ configuration\ (?<action>generated|released).\ User\ name:\ (?<user>.+?),"
         $GpMatch = $GpEventRx.Match($Body)
         if ($GpMatch.Success) {
+            log 5 "post message matched successfully"
             # Extract what we need from the log message
             $Action = $GpMatch.Groups['action'].Value
             $User = $GpMatch.Groups['user'].Value
