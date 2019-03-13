@@ -29,10 +29,7 @@ $Endpoint = New-UDEndpoint -Url "/$ApiName" -Method "POST" -ArgumentList $RootDi
 
     # Setup Logging
     $Global:LogFile = Join-Path -Path $RootPath -ChildPath 'updaterule.log'
-    $global:LogThreshold = $Config.LogThreshold
-    $global:SyslogApplication = $Config.SyslogApplication
-    $global:LogDnaApiKey = $Config.LogDnaApiKey
-    $global:LogDnaEnvironment = $Config.LogDnaEnvironment
+    $global:LogThreshold = 5
 
     log 1 "Starting updaterule" -LogHeader
     log 1 "ConfigPath: $ConfigPath"
@@ -41,6 +38,11 @@ $Endpoint = New-UDEndpoint -Url "/$ApiName" -Method "POST" -ArgumentList $RootDi
     # Import Configuration
     log 5 "importing configuration"
     $Config = Get-CsConfiguration $ConfigPath
+
+    $global:LogThreshold = $Config.LogThreshold
+    $global:SyslogApplication = $Config.SyslogApplication
+    $global:LogDnaApiKey = $Config.LogDnaApiKey
+    $global:LogDnaEnvironment = $Config.LogDnaEnvironment
 
     # Create a credential to decode apikey
     log 5 "decrypting apikey"
