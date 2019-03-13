@@ -124,67 +124,69 @@ $Endpoint = New-UDEndpoint -Url "/$ApiName" -Method "POST" -ArgumentList $RootDi
 
                     ###################################
                     # Add Address Objects
-                    log 3 "Checking for $($DeviceList.Count) device(s)"
-                    foreach ($d in $DeviceList) {
-                        log 3 "$BaseMessage Looking up cpe: $d"
-                        $Lookup = $CurrentAddresses | Where-Object { ($_.Value -eq $d) -or ($_.Value -eq "$d/32") }
-                        if ($Lookup) {
-                            log 4 "$d`: found"
-                            if ($Lookup.Tags -notcontains $UserTag) {
-                                log 4 "$d`: adding tag: $UserTag"
-                                $Lookup | Set-PaAddress -Tag $UserTag
+                    if ($DeviceList.status -ne 'error') {
+                        log 3 "Checking for $($DeviceList.Count) device(s)"
+                        foreach ($d in $DeviceList) {
+                            log 3 "$BaseMessage Looking up cpe: $d"
+                            $Lookup = $CurrentAddresses | Where-Object { ($_.Value -eq $d) -or ($_.Value -eq "$d/32") }
+                            if ($Lookup) {
+                                log 4 "$d`: found"
+                                if ($Lookup.Tags -notcontains $UserTag) {
+                                    log 4 "$d`: adding tag: $UserTag"
+                                    $Lookup | Set-PaAddress -Tag $UserTag
+                                    $TroubleshootingData.PaDevice = $global:padeviceobject
+                                }
+                            } else {
+                                $Add = @{}
+                                $Add.Name = 'cpe_' + $d + '-32'
+                                $Add.Type = 'ip-netmask'
+                                $Add.Value = "$d/32"
+                                $Add.Tag = @('cpe', $UserTag)
+                                log 4 "Creating address: $($Add.Name)"
+                                $CreateAddress = Set-PaAddress @Add
                                 $TroubleshootingData.PaDevice = $global:padeviceobject
                             }
+                        }
+
+                        ###################################
+                        # Add Destination Address Group
+                        $Filter = "'cpe' and '$UserTag'"
+                        $Lookup = Get-PaAddressGroup -Name $GroupName
+                        if ($Lookup) {
+                            log 4 "Address Group exists"
                         } else {
                             $Add = @{}
-                            $Add.Name = 'cpe_' + $d + '-32'
-                            $Add.Type = 'ip-netmask'
-                            $Add.Value = "$d/32"
-                            $Add.Tag = @('cpe', $UserTag)
-                            log 4 "Creating address: $($Add.Name)"
-                            $CreateAddress = Set-PaAddress @Add
-                            $TroubleshootingData.PaDevice = $global:padeviceobject
+                            $Add.Name = $GroupName
+                            $Add.Filter = $Filter
+                            log 4 "Creating Address Group: $($Add.Name)"
+                            $AddGroup = Set-PaAddressGroup @Add
                         }
-                    }
 
-                    ###################################
-                    # Add Destination Address Group
-                    $Filter = "'cpe' and '$UserTag'"
-                    $Lookup = Get-PaAddressGroup -Name $GroupName
-                    if ($Lookup) {
-                        log 4 "Address Group exists"
-                    } else {
-                        $Add = @{}
-                        $Add.Name = $GroupName
-                        $Add.Filter = $Filter
-                        log 4 "Creating Address Group: $($Add.Name)"
-                        $AddGroup = Set-PaAddressGroup @Add
-                    }
+                        ###################################
+                        # Add Create Security Policy
 
-                    ###################################
-                    # Add Create Security Policy
+                        $Lookup = Get-PaSecurityPolicy -Name $PolName
+                        if ($Lookup) {
+                            log 3 "Security Policy exists"
+                        } else {
+                            $Add = @{}
+                            $Add.Name = $PolName
+                            $Add.SourceZone = $Config.SourceZone
+                            $Add.DestinationZone = $Config.DestinationZone
+                            $Add.SourceUser = $User
+                            $Add.DestinationAddress = $GroupName
+                            $Add.Action = 'allow'
 
-                    $Lookup = Get-PaSecurityPolicy -Name $PolName
-                    if ($Lookup) {
-                        log 3 "Security Policy exists"
-                    } else {
-                        $Add = @{}
-                        $Add.Name = $PolName
-                        $Add.SourceZone = $Config.SourceZone
-                        $Add.DestinationZone = $Config.DestinationZone
-                        $Add.SourceUser = $User
-                        $Add.DestinationAddress = $GroupName
-                        $Add.Action = 'allow'
+                            log 4 "creating Security Policy $($Add.Name)"
+                            $AddRule = Set-PaSecurityPolicy @Add
 
-                        log 4 "creating Security Policy $($Add.Name)"
-                        $AddRule = Set-PaSecurityPolicy @Add
+                            $Move = @{}
+                            $Move.Name = $PolName
+                            $Move.Top = $true
 
-                        $Move = @{}
-                        $Move.Name = $PolName
-                        $Move.Top = $true
-
-                        log 4 "Moving Security Policy $($Add.Name)"
-                        $MoveRule = Move-PaSecurityPolicy @Move
+                            log 4 "Moving Security Policy $($Add.Name)"
+                            $MoveRule = Move-PaSecurityPolicy @Move
+                        }
                     }
                     break
                 }
