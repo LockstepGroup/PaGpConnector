@@ -46,7 +46,8 @@ $Endpoint = New-UDEndpoint -Url "/$ApiName" -Method "POST" -ArgumentList $RootDi
     try {
         $Connect = Get-PaDevice -DeviceAddress $Config.PaDevice -ApiKey $ApiKey
     } catch {
-        #TODO: needs some error handling
+        log 1 "could not connect to pa, check ts.xml for details" -IsError
+        $TroubleshootingData.Error += $_
     }
 
     # These tags are a minimum of what will be needed.
