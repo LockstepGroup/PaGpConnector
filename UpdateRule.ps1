@@ -39,13 +39,23 @@ $Endpoint = New-UDEndpoint -Url "/$ApiName" -Method "POST" -ArgumentList $RootDi
     log 5 "importing configuration"
     $Config = Get-CsConfiguration $ConfigPath
 
+    # Update log threshold from config file
     $global:LogThreshold = $Config.LogThreshold
-    $global:SyslogApplication = $Config.SyslogApplication
-    $global:LogDnaApiKey = $Config.LogDnaApiKey
-    $global:LogDnaEnvironment = $Config.LogDnaEnvironment
+
+    # Setup LogDna
+    if ($Config.SyslogApplication -and $Config.LogDnaApiKey -and $Config.LogDnaEnvironment) {
+        $global:SyslogApplication = $Config.SyslogApplication
+        $global:LogDnaEnvironment = $Config.LogDnaEnvironment
+
+        # Create a credential to decode apikey
+        log 5 "decrypting logdna apikey"
+        $ApiKey = ConvertTo-SecureString $Config.LogDnaApiKey -Key $Config.AesKey
+        $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'user', $ApiKey
+        $global:LogDnaApiKey = $Credential.GetNetworkCredential().Password
+    }
 
     # Create a credential to decode apikey
-    log 5 "decrypting apikey"
+    log 5 "decrypting pa apikey"
     $ApiKey = ConvertTo-SecureString $Config.ApiKey -Key $Config.AesKey
     $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'user', $ApiKey
     $ApiKey = $Credential.GetNetworkCredential().Password
