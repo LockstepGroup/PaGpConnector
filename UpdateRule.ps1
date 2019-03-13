@@ -36,14 +36,17 @@ $Endpoint = New-UDEndpoint -Url "/$ApiName" -Method "POST" -ArgumentList $RootDi
     log 5 "Post Message: $Body"
 
     # Import Configuration
+    log 5 "importing configuration"
     $Config = Get-CsConfiguration $ConfigPath
 
     # Create a credential to decode apikey
+    log 5 "decrypting apikey"
     $ApiKey = ConvertTo-SecureString $Config.ApiKey -Key $Config.AesKey
     $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'user', $ApiKey
     $ApiKey = $Credential.GetNetworkCredential().Password
 
     try {
+        log 5 "attempting to connect to palo alto firewall"
         $Connect = Get-PaDevice -DeviceAddress $Config.PaDevice -ApiKey $ApiKey
     } catch {
         log 1 "could not connect to pa, check ts.xml for details" -IsError
