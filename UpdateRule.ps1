@@ -28,8 +28,8 @@ $Endpoint = New-UDEndpoint -Url "/$ApiName" -Method "POST" -ArgumentList $RootDi
     $ConfigPath = Join-Path -Path $RootPath -ChildPath "config.json"
 
     # Setup Logging
-    $Global:LogFile = Join-Path -Path $RootPath -ChildPath 'updaterule.log' #TODO: pull from config
-    $global:LogThreshold = 5 #TODO: pull from config
+    $Global:LogFile = Join-Path -Path $RootPath -ChildPath 'updaterule.log'
+    $global:LogThreshold = $Config.LogThreshold
 
     log 1 "Starting updaterule" -LogHeader
     log 1 "ConfigPath: $ConfigPath"
@@ -214,7 +214,6 @@ $Endpoint = New-UDEndpoint -Url "/$ApiName" -Method "POST" -ArgumentList $RootDi
         }
         $TroubleshootingData.PaDevice = $global:padeviceobject
     } catch {
-        #TODO: needs some error handling
         $TroubleshootingData.PaDevice = $global:padeviceobject
         $TroubleshootingData.Error += $_
     }
