@@ -4,7 +4,7 @@ $ApiName = "updaterule"
 
 $EndpointInitialization = New-UDEndpointInitialization -Variable RootPath
 
-$Endpoint = New-UDEndpoint -Url "/updaterule" -Method "POST" -Endpoint {
+$Endpoint = New-UDEndpoint -Url "/updaterule" -Method "POST" -ArgumentList (Get-Location).Path -Endpoint {
     param($Body)
 
     trap {
@@ -22,7 +22,7 @@ $Endpoint = New-UDEndpoint -Url "/updaterule" -Method "POST" -Endpoint {
     Import-Module PowerAlto
 
     # $MyInvocation doesn't appear to exist for Endpoints, gotta set it manually
-    $RootPath = '/Users/brian/dev/PaGpConnector'
+    $RootPath = $ArgumentList[0]
 
     $TsFile = Join-Path -Path $RootPath -ChildPath "ts.xml"
     $ConfigPath = Join-Path -Path $RootPath -ChildPath "config.json"
@@ -32,6 +32,7 @@ $Endpoint = New-UDEndpoint -Url "/updaterule" -Method "POST" -Endpoint {
     $global:LogThreshold = 5 #TODO: pull from config
 
     log 1 "Starting updaterule" -LogHeader
+    log 1 "ConfigPath: $ConfigPath"
 
     # Import Configuration
     $Config = Get-CsConfiguration $ConfigPath
@@ -198,7 +199,7 @@ $Endpoint = New-UDEndpoint -Url "/updaterule" -Method "POST" -Endpoint {
             }
         } else {
             log 1 "Invalid Post"
-            log 1 "Post Message: $Body"
+            log 5 "Post Message: $Body"
         }
         $TroubleshootingData.PaDevice = $global:padeviceobject
     } catch {
