@@ -1,8 +1,10 @@
 #Requires -Modules UniversalDashboard
 
+$RootDirectory = Split-Path -Path $MyInvocation.MyCommand.Path
+
 $ApiName = "getdevice"
-$Endpoint = New-UDEndpoint -Url "/getdevice/:user" -Method "GET" -Endpoint {
-    $DeviceMapping = @{
+$Endpoint = New-UDEndpoint -Url "/getdevice/:user" -Method "GET" -ArgumentList $RootDirectory -Endpoint {
+    <# $DeviceMapping = @{
         "VendorA" = @(
             '10.89.89.2'
             '10.89.89.3'
@@ -19,9 +21,14 @@ $Endpoint = New-UDEndpoint -Url "/getdevice/:user" -Method "GET" -Endpoint {
             '10.89.91.4'
         )
     }
-    $Devices = $DeviceMapping.$user
+    $Devices = $DeviceMapping.$user #>
+
+    $DeviceMappingCsv = Join-Path -Path $ArgumentList[0] -ChildPath 'DummyData.csv'
+    $DeviceMapping = Import-Csv -Path $DeviceMappingCsv
+    $Devices = $DeviceMapping | Where-Object { $_.Username -eq $user }
+
     if ($Devices) {
-        $Devices | ConvertTo-Json
+        $Devices.IpAddress | ConvertTo-Json
     } else {
         @{
             status  = "error"
