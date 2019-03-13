@@ -33,6 +33,7 @@ $Endpoint = New-UDEndpoint -Url "/$ApiName" -Method "POST" -ArgumentList $RootDi
 
     log 1 "Starting updaterule" -LogHeader
     log 1 "ConfigPath: $ConfigPath"
+    log 5 "Post Message: $Body"
 
     # Import Configuration
     $Config = Get-CsConfiguration $ConfigPath
@@ -198,8 +199,7 @@ $Endpoint = New-UDEndpoint -Url "/$ApiName" -Method "POST" -ArgumentList $RootDi
                 log 1 "Commit set to false, skipping Commit..."
             }
         } else {
-            log 1 "Invalid Post"
-            log 5 "Post Message: $Body"
+            log 1 "Invalid post message"
         }
         $TroubleshootingData.PaDevice = $global:padeviceobject
     } catch {
