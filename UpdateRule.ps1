@@ -2,9 +2,9 @@
 
 $ApiName = "updaterule"
 
-$EndpointInitialization = New-UDEndpointInitialization -Variable RootPath
+$RootDirectory = Split-Path -Path $MyInvocation.MyCommand.Path
 
-$Endpoint = New-UDEndpoint -Url "/updaterule" -Method "POST" -ArgumentList (Get-Location).Path -Endpoint {
+$Endpoint = New-UDEndpoint -Url "/$ApiName" -Method "POST" -ArgumentList $RootDirectory -Endpoint {
     param($Body)
 
     trap {
