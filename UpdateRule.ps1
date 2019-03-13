@@ -30,6 +30,9 @@ $Endpoint = New-UDEndpoint -Url "/$ApiName" -Method "POST" -ArgumentList $RootDi
     # Setup Logging
     $Global:LogFile = Join-Path -Path $RootPath -ChildPath 'updaterule.log'
     $global:LogThreshold = $Config.LogThreshold
+    $global:SyslogApplication = $Config.SyslogApplication
+    $global:LogDnaApiKey = $Config.LogDnaApiKey
+    $global:LogDnaEnvironment = $Config.LogDnaEnvironment
 
     log 1 "Starting updaterule" -LogHeader
     log 1 "ConfigPath: $ConfigPath"
