@@ -79,7 +79,7 @@ This is a POC designed to show off the flexibility of the Palo Alto API. It demo
 2. Click Add
 3. Click Add on the Servers tab in the HTTP Server Profile dialog and configure as follows, this is for your PowerShell WebServer
     | Setting | Value |
-    |---|---|---|
+    |---|---|
     | Name | PowerShell WebServer |
     | Address | fqdn of your PowerShell WebServer |
     | Protocol | http (unless you got fancy) |
@@ -87,7 +87,7 @@ This is a POC designed to show off the flexibility of the Palo Alto API. It demo
     | HTTP Method | POST |
 4. On the Payload Format tab click System and configure as follows
     | Setting | Value |
-    |---|---|---|
+    |---|---|
     | Name | updaterule |
     | URI Format | /api/updaterule |
     | Payload | $opaque |
@@ -96,7 +96,7 @@ This is a POC designed to show off the flexibility of the Palo Alto API. It demo
 1. Login to your PA and navigate to Device > Log Settings
 2. Click Add udner the System "pod" and configure as follows.
     | Setting | Value |
-    |---|---|---|
+    |---|---|
     | Name | PowerShell WebServer |
     | Filter | ( subtype eq globalprotect ) and (description contains 'GlobalProtect gateway client configuration') |
     | HTTP | Click Add, and select your HTTP Profile |
