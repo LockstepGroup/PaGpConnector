@@ -1,4 +1,4 @@
-#Requires -Modules Corkscrew,UniversalDashboard
+#Requires -Modules Corkscrew,UniversalDashboard,PowerAlto
 
 $ApiName = "updaterule"
 

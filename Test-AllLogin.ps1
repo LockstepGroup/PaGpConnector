@@ -7,7 +7,10 @@ Param (
     [string]$ApiServer = 'localhost',
 
     [Parameter(Mandatory = $false)]
-    [string]$ApiPort = 10004
+    [string]$ApiPort = 10004,
+
+    [Parameter(Mandatory = $false)]
+    [string]$Action = 'login'
 )
 
 $DummyData = Import-Csv -Path $CsvPath
