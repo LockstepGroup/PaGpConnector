@@ -75,9 +75,11 @@ This is a POC designed to show off the flexibility of the Palo Alto API. It demo
 ### Palo Alto Setup
 
 #### Setup an HTTP Server Profile
+
 1. Login to your PA and navigate to Device > Server Profiles > HTTP
 2. Click Add
 3. Click Add on the Servers tab in the HTTP Server Profile dialog and configure as follows, this is for your PowerShell WebServer
+
     | Setting | Value |
     |---|---|
     | Name | PowerShell WebServer |
@@ -85,7 +87,9 @@ This is a POC designed to show off the flexibility of the Palo Alto API. It demo
     | Protocol | http (unless you got fancy) |
     | Port | 10004 |
     | HTTP Method | POST |
+
 4. On the Payload Format tab click System and configure as follows
+
     | Setting | Value |
     |---|---|
     | Name | updaterule |
@@ -93,16 +97,20 @@ This is a POC designed to show off the flexibility of the Palo Alto API. It demo
     | Payload | $opaque |
 
 #### Enable System Log Forwarding
+
 1. Login to your PA and navigate to Device > Log Settings
 2. Click Add udner the System "pod" and configure as follows.
+
     | Setting | Value |
     |---|---|
     | Name | PowerShell WebServer |
     | Filter | ( subtype eq globalprotect ) and (description contains 'GlobalProtect gateway client configuration') |
     | HTTP | Click Add, and select your HTTP Profile |
+
 3. Commit
 
 # That's It
+
 That's all, now you should be able to login with a valid GlobalProtect user that you've created dummy data for and watch Security Policies magically appear. Also included is a script to simulate logins from all the users in the DummyData.csv file. This doesn't actually login to globalprotect, but just simulates logs forwarded from the PA to the API as if it did. Usage:
 
 ```powershell
